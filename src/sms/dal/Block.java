@@ -1,32 +1,59 @@
 package sms.dal;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 /**
- * 区块的数据结�?
+ * 区块的数据结构
+ * 一个区块存一个课程班的成绩单。
  * @author Chiuin
  *
  */
 public class Block {
-	int version; //版本�?
-	String prevBlockHash;//父哈希，指向前一区块�?
-	String merkleRoot;//Merkle根，梅克树，�?有交易的�?个汇总hash�?
-	int timeStamp;//时间�?
-	int difficutyTarget;
-	int randomNumber;//随机数，也叫：Nonce
-//	int next;//下一区块
+	private int version; //版本号
+//	Block preBlock;
+	private String prevBlockHash;//父哈希，指向前一区块
+//	private String merkleRoot;//Merkle根，梅克树，所有记录的汇总hash值
+	private long timeStamp;//时间戳
+//	private int difficutyTarget;//困难指数，用于工作量证明
+//	private int randomNumber;//随机数，也叫：Nonce
+//	Block nextBlock;
+//	String nextBlockHash
+	private String creator;//区块创建者
+	private String signature;//区块创建者签名
+	
+	private String info;
+	
+	
+	public Block(int version,String prevBlockHash,long timeStamp){
+		this.version = version;
+		this.prevBlockHash = prevBlockHash;
+		this.timeStamp = timeStamp;
+	}
 	
 	/**
-version	4字节	版本号，⽤于跟踪软件/协议的更�?
-prevBlockHash	32字节	上一个区块的Hash地址
-merkleRoot	32字节	该区块中交易的merkl e树根的哈希�?�（稍后详细说明�?
-time	4字节	该区块的创建时间�?
-difficultyTarget	4字节	该区块链工作量证明难度目�?(稍后讲解工作量证�?)
-nonce	4字节	用于证明工作量的计算参数
+	 * 调用此方法会生成一个符合规范的区块，
+	 * 通过new生成的Block只包含一些初始信息，并不符合规范。
+	 * @return
 	 */
-	//信息
-	//大小
-	//签名
-
-	//持有者的公钥
-	//记录数据
-	//签名
+	public Block generateBlock() {
+		//todo:
+		
+		if(checkBlock(this)) return this;
+		return null;
+	}
+	
+	/**
+	 * 调用此方法可检查传入的区块是否符合规范
+	 * @param block
+	 * @return
+	 */
+	public static boolean checkBlock(Block block) {
+		//todo:什么样的区块是符合规范的？
+		return false;
+	}
 }

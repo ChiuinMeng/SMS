@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.Time;
 import java.util.Scanner;
 
 import sms.Config;
@@ -13,6 +14,7 @@ import sms.Security;
 import sms.dal.Block;
 import sms.dal.BlockChain;
 import sms.dal.DatabaseAccess;
+import sms.dal.Record;
 
 public class Server {
 	private Scanner sc = new Scanner(System.in);
@@ -102,8 +104,9 @@ public class Server {
 		config.setSchoolPublicKey(s.getRSAPublicKey());
 		//3. 创建创世区块，并用自己私钥签名
 		BlockChain bc = new BlockChain();
-		Block firstBlock = new Block();
-		firstBlock.
+		Block firstBlock = new Block(1, null, System.currentTimeMillis());
+		Record record = new Record();
+		record.
 		bc.createFirstBlock(firstBlock);
 		//2. 广播创世区块和自己的公钥
 	}
