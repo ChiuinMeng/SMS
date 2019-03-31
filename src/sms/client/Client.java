@@ -3,6 +3,7 @@ import java.util.Scanner;
 
 import sms.FileTool;
 import sms.MessageSender;
+import sms.Password;
 import sms.Security;
 
 public class Client {

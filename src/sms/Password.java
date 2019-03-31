@@ -1,4 +1,4 @@
-package sms.client;
+package sms;
 
 
 import java.io.Console;
@@ -17,22 +17,6 @@ public class Password {
 		Console console = System.console();
 		if(console!=null) return encryptPassword(console.readPassword());
 		return encryptPassword(new Scanner(System.in).nextLine().toCharArray());
-	}
-	
-	/**
-	 * 正在完善，不建议使用
-	 * @param method
-	 * @return
-	 */
-	public static String getEncryptedPassword(int method) {
-		if(method==0) return getEncryptedPassword();
-		else if(method==1) {
-			return new Scanner(System.in).nextLine();
-		}else if(method==2){
-			return null;
-		}else {
-			return null;
-		}
 	}
 	
 	private static String encryptPassword(char[] cs) {

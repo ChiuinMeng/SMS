@@ -5,6 +5,7 @@ import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -86,7 +87,7 @@ public class Security {
 	 * @param key RSA公钥或私钥
 	 * @return 加密后的字符串，并进行过Base64编码。若发生错误，返回null。
 	 */
-	public String encryptString(String str,Key key) {
+	public static String encryptString(String str,Key key) {
 		try {
 			Cipher cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -105,7 +106,7 @@ public class Security {
 	 * @param key 解密钥匙
 	 * @return 解密后的明文。若发生错误，返回null。
 	 */
-	public String decryptString(String str,Key key) {
+	public static String decryptString(String str,Key key) {
 		Cipher cipher;
 		try {
 			cipher = Cipher.getInstance("RSA");
@@ -151,5 +152,37 @@ public class Security {
         KeyFactory keyFactory1 = KeyFactory.getInstance("RSA");
         RSAPrivateCrtKey priKey = (RSAPrivateCrtKey)keyFactory1.generatePrivate(priKeySpec);
         return priKey;
+	}
+	
+	/**
+	 * 将钥匙以base64编码，返回字符串
+	 * @param key
+	 * @return
+	 */
+	public static String keyToString_Base64(Key key) {
+		return new String(Base64.getEncoder().encode(key.getEncoded()));
+	}
+	
+	/**
+	 *  获取某段字符串的数据摘要。
+	 *  method建议为SHA-256。
+	 * @param content 
+	 * @param method SHA-256,MD5等
+	 * @return
+	 */
+	public static String getDigitalMessage(String content,String method) {
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance(method);
+		} catch (NoSuchAlgorithmException e) {
+			System.out.println("输入方法有误");
+			e.printStackTrace();
+		}
+		if(md!=null) {
+			md.update(content.getBytes());
+			byte[] d = md.digest();
+			return new BigInteger(1,d).toString(16);
+		}
+		return null;
 	}
 }

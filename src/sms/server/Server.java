@@ -14,7 +14,6 @@ import sms.Security;
 import sms.dal.Block;
 import sms.dal.BlockChain;
 import sms.dal.DatabaseAccess;
-import sms.dal.Record;
 
 public class Server {
 	private Scanner sc = new Scanner(System.in);
@@ -104,10 +103,11 @@ public class Server {
 		config.setSchoolPublicKey(s.getRSAPublicKey());
 		//3. 创建创世区块，并用自己私钥签名
 		BlockChain bc = new BlockChain();
-		Block firstBlock = new Block(1, null, System.currentTimeMillis());
-		Record record = new Record();
-		record.
+		String info = "{\"学校名\":\"汕头大学\",\"学校标识码\":4144010560,\"省份\":\"广东省\"}";
+		Block firstBlock = new Block(1, null, System.currentTimeMillis(),s.getRSAPublicKey(),info);
+		firstBlock = firstBlock.generateBlock(s.getRSAPrivateCrtKey());
 		bc.createFirstBlock(firstBlock);
 		//2. 广播创世区块和自己的公钥
+		
 	}
 }
