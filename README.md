@@ -1,2 +1,2 @@
 # SMS
-score management system
+score management system base on blockchain tech
