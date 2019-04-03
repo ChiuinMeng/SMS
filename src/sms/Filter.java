@@ -1,4 +1,4 @@
-package sms.server;
+package sms;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,8 +7,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-
-import sms.MessageSender;
 
 public class Filter implements Runnable{
 	//处理接受到的socket内容
@@ -22,7 +20,9 @@ public class Filter implements Runnable{
 	@Override
 	public void run() {
 		address = socket.getInetAddress();
+		PeerManagement.addHost(address);
         System.out.println("当前客户端的Ip地址："+ address.getHostAddress());
+        
         InputStream is=null;
         InputStreamReader isr=null;
         BufferedReader br=null;
@@ -81,7 +81,7 @@ public class Filter implements Runnable{
 			br.close();
 			isr.close();
 			is.close();
-			socket.close();
+			socket.close();//
 		} catch (IOException e) {
 			System.out.println("关闭资源错误");
 			e.printStackTrace();

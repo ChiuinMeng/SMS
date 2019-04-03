@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
+import org.apache.commons.io.FileUtils;
+
 /**
  * 该类用于封装一些对文件的操作
  * @author Chiuin
@@ -21,6 +23,10 @@ public class FileTool {
 	 * @return 1：创建成功，-1：创建失败，-2：已有同名文件
 	 */
 	public static int crateFile(String pathname) {
+		if(System.getProperty("os.name").contains("inux")) {
+			pathname = pathname.replaceAll("\\\\","/");
+			System.out.println("因为是Linux系统，文件名已修改为："+pathname);
+		}
 		File file = new File(pathname);
 		if(!file.exists()) {//若文件不存在
 			try {
@@ -36,9 +42,6 @@ public class FileTool {
 			return -2;
 		}
 	}
-	public static int crateFile(String pathname,int type) {
-		return 0;
-	}
 	/**
 	 * 在指定位置创建文件，并写入String类型的数据。
 	 * @param pathname 文件位置（含文件名），如：C:\Users\Chiuin\Downloads\demo.txt。
@@ -47,6 +50,10 @@ public class FileTool {
 	 * @return 1：创建成功，-1：创建失败，-2：已有同名文件
 	 */
 	public static int crateFile(String pathname,String content) {
+		if(System.getProperty("os.name").contains("inux")) {
+			pathname = pathname.replaceAll("\\\\","/");
+			System.out.println("因为是Linux系统，文件名已修改为："+pathname);
+		}
 		File file = new File(pathname);
 		int r = 0;
 		if(!file.exists()) {//若文件不存在
@@ -55,7 +62,7 @@ public class FileTool {
 			File pf = file.getParentFile();
 			if(!pf.exists()) pf.mkdir();//父目录不存在，创建目录
 			try {
-				file.createNewFile();
+				file.createNewFile();//Linux执行可能会报错,用sudo命令执行。
 				fos = new FileOutputStream(file);
 				pw = new PrintWriter(fos);
 				pw.write(content);
@@ -74,9 +81,6 @@ public class FileTool {
 		}
 		return r;
 	}
-	public static int crateFile(String pathname,int type,String content) {
-		return 0;
-	}
 	
 	/**
 	 * 读取文件
@@ -85,28 +89,47 @@ public class FileTool {
 	 * @return 文件内容，回车换行符以'\r'和'\n'字符表示。
 	 */
 	public static String readFile(String pathname) {
+		if(System.getProperty("os.name").contains("inux")) {
+			pathname = pathname.replaceAll("\\\\","/");
+			System.out.println("因为是Linux系统，文件名已修改为："+pathname);
+		}
 		File file = new File(pathname);
 		if(!file.exists()) return null; //若文件不存在，返回null
-		String r = "";String temp;
+		
+		String r = "";
+		String temp;
 		FileInputStream fis = null;
         InputStreamReader isr = null;
         BufferedReader br = null;
         try {
 			fis = new FileInputStream(file);
-			isr = new InputStreamReader(fis);
+			isr = new InputStreamReader(fis,"UTF-8");
 	        br = new BufferedReader(isr);
-	        for(int i=0;(temp=br.readLine())!=null;i++) {
+	        for(int i=0;(temp=br.readLine())!=null;i++) {//readLine()可能会乱码！
 	        	if(i==0) r = r+temp;
 	        	else r = r+'\r'+'\n'+temp;//在Unix中只有换行，没有回车怎么办。
 	        }
 	        if(fis!=null) fis.close();
 	        if(isr!=null) fis.close();
 	        if(br!=null) br.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
         return r;
+	}
+	
+	/**
+	 * 使用common-io包读取的文件信息。
+	 * @param path
+	 * @return
+	 */
+	public static String readFileToString(String path) {
+		try {
+			return FileUtils.readFileToString(new File(path), "UTF-8");
+		} catch (Exception e) {
+			System.out.println("读取文件出错！");
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

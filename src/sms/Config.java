@@ -1,78 +1,116 @@
 package sms;
 import java.io.Serializable;
-import java.security.interfaces.RSAPublicKey;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 public class Config implements Serializable{
-	private String serverIP;//服务器的ip地址
-	private int port = 1934;//默认端口号
+	private static final long serialVersionUID = 8089987927733836847L;
+	private String hostType;//主机类型，主节点1，次节点0，学校服务器2
+	private String operateSystem;
 	private String schoolName;
-	private RSAPublicKey schoolPublicKey;//学校的公钥
-	private RSAPublicKey localPublicKey;//本机的公钥
-	private int hostType;//本机类型，主节点1，次节点0，学校服务器2
-	private String databaseURL;//如："jdbc:mysql://localhost:3306/sms?serverTimezone=GMT"
-	private String databaseUserName;
-	private String databasePassword;
-	private String databaseDriverName;
+	private String serverHost;//学校服务器主机，如：www.stu.edu.cn、127.0.0.1
+	private int port = 1934;//默认端口号
+	private Key key;
+	private Database database;
+	private boolean hadRunOnce;
 	
-	public String getServerIP() {
-		return serverIP;
+	
+	public Config(JSONObject config) {
+		hostType = config.getString("hostType");
+		operateSystem = System.getProperty("os.name").toLowerCase();
+		schoolName = config.getString("schoolName");
+		serverHost = config.getString("serverHost");
+		port = config.getIntValue("port");
+		key = new Key((JSONObject)config.get("key"));
+		database = new Database((JSONObject)config.get("database"));
+		hadRunOnce = config.getBooleanValue("hadRunOnce");
 	}
-	public void setServerIP(String serverIP) {
-		this.serverIP = serverIP;
+
+	public String toJSONStringFormat() {
+		JSONObject json = (JSONObject)JSONObject.toJSON(this);
+		return JSON.toJSONString(json,SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+	}
+	public String toJSONString() {
+		JSONObject json = (JSONObject)JSONObject.toJSON(this);
+		return json.toJSONString();
 	}
 	public int getPort() {
 		return port;
 	}
-	public void setPort(int port) {
-		this.port = port;
-	}
 	public String getSchoolName() {
 		return schoolName;
 	}
-	public void setSchoolName(String schoolName) {
-		this.schoolName = schoolName;
-	}
-	public RSAPublicKey getSchoolPublicKey() {
-		return schoolPublicKey;
-	}
-	public void setSchoolPublicKey(RSAPublicKey schoolPublicKey) {
-		this.schoolPublicKey = schoolPublicKey;
-	}
-	public RSAPublicKey getLocalPublicKey() {
-		return localPublicKey;
-	}
-	public void setLocalPublicKey(RSAPublicKey localPublicKey) {
-		this.localPublicKey = localPublicKey;
-	}
-	public int getHostType() {
+	public String getHostType() {
 		return hostType;
 	}
-	public void setHostType(int hostType) {
-		this.hostType = hostType;
+	public String getOperateSystem() {
+		return operateSystem;
 	}
-	public String getDatabaseURL() {
-		return databaseURL;
+	public String getServerHost() {
+		return serverHost;
 	}
-	public void setDatabaseURL(String databaseURL) {
-		this.databaseURL = databaseURL;
+	public Key getKey() {
+		return key;
 	}
-	public String getDatabaseUserName() {
-		return databaseUserName;
+	public Database getDatabase() {
+		return database;
 	}
-	public void setDatabaseUserName(String databaseUserName) {
-		this.databaseUserName = databaseUserName;
+	public boolean isHadRunOnce() {
+		return hadRunOnce;
 	}
-	public String getDatabasePassword() {
-		return databasePassword;
+	public void setHadRunOnce(boolean hadRunOnce) {
+		this.hadRunOnce = hadRunOnce;
 	}
-	public void setDatabasePassword(String databasePassword) {
-		this.databasePassword = databasePassword;
+
+
+
+
+	public class Key{
+		private String schoolPublicKey;//学校的公钥
+		private String localPublicKey;//本机的公钥
+		Key(JSONObject key){
+			if(key==null) return;
+			schoolPublicKey =key.getString("schoolPublicKey");
+			localPublicKey = key.getString("localPublicKey");
+		}
+		public String getSchoolPublicKey() {
+			return schoolPublicKey;
+		}
+		public String getLocalPublicKey() {
+			return localPublicKey;
+		}
+		public void setSchoolPublicKey(String schoolPublicKey) {
+			this.schoolPublicKey = schoolPublicKey;
+		}
+		public void setLocalPublicKey(String localPublicKey) {
+			this.localPublicKey = localPublicKey;
+		}
 	}
-	public String getDatabaseDriverName() {
-		return databaseDriverName;
+	class Database{
+		private String url;//如："jdbc:mysql://localhost:3306/sms?serverTimezone=GMT"
+		private String userName;
+		private String password;
+		private String driverName;	
+		Database(JSONObject database){
+			if(database==null) return;
+			url = database.getString("url");
+			userName = database.getString("userName");
+			password = database.getString("password");
+			driverName = database.getString("driverName");
+		}
+		public String getUrl() {
+			return url;
+		}
+		public String getUserName() {
+			return userName;
+		}
+		public String getPassword() {
+			return password;
+		}
+		public String getDriverName() {
+			return driverName;
+		}
 	}
-	public void setDatabaseDriverName(String databaseDriverName) {
-		this.databaseDriverName = databaseDriverName;
-	}
-	
 }

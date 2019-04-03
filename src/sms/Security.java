@@ -28,6 +28,8 @@ import com.mysql.cj.util.Base64Decoder;
 public class Security {
 	private RSAPublicKey publicKey;
 	private RSAPrivateCrtKey privateKey;
+	public static final int KeyType_Public = 1;
+	public static final int KeyType_Private = 2;
 	
 	/**
 	 * 生成公私钥匙对，稍后调用getPublicKey()和getPrivateKey()获得
@@ -182,6 +184,44 @@ public class Security {
 			md.update(content.getBytes());
 			byte[] d = md.digest();
 			return new BigInteger(1,d).toString(16);
+		}
+		return null;
+	}
+
+	public static String encryptString(String content, String keyFilePath,int type) {
+		try {
+			if(type==KeyType_Private) {
+				return encryptString(content, getPrivateKeyFromFile(keyFilePath));
+			}else if(type==KeyType_Public) {
+				return encryptString(content, getPublicKeyFromFile(keyFilePath));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static RSAPublicKey getPublicKeyFromString(String publicKey) {
+		try {
+			byte[] key_byte = Base64.getDecoder().decode(publicKey.getBytes());
+			X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(key_byte);
+	        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+	        RSAPublicKey pubKey = (RSAPublicKey)keyFactory.generatePublic(pubKeySpec);
+			return pubKey;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public static RSAPrivateCrtKey getPrivateKeyFromString(String privateKey) {
+		try {
+			byte[] key_byte = Base64.getDecoder().decode(privateKey.getBytes());
+	        PKCS8EncodedKeySpec priKeySpec = new PKCS8EncodedKeySpec(key_byte);
+	        KeyFactory keyFactory1 = KeyFactory.getInstance("RSA");
+	        RSAPrivateCrtKey priKey = (RSAPrivateCrtKey)keyFactory1.generatePrivate(priKeySpec);
+	        return priKey;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}

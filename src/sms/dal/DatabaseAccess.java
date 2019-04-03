@@ -50,6 +50,7 @@ public class DatabaseAccess {
 	public DatabaseAccess connect() {
 		try {
 			Class.forName(driverName);// 加载驱动。此步容易出错。请为mysql-connector-java-8.0.15.jar包配置classpath。
+			System.out.println(url+user+password);
 			conn = DriverManager.getConnection(url, user, password);
         	connect_success = true;
         	System.out.println("连接数据库成功。");

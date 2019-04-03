@@ -4,34 +4,27 @@ import java.util.Scanner;
 import sms.FileTool;
 import sms.MessageSender;
 import sms.Password;
+import sms.PeerManagement;
 import sms.Security;
 
 public class Client {
 	Scanner sc = new Scanner(System.in);
 	int choose;
-	String ip = "127.0.0.1";
+	String schoolIp ;
 	int port = 1934;
+	PeerManagement pm;
 	
-	public static void main(String[] args) {
-		Client client = new Client();
-		client.start();
+	public Client() {
 	}
-
-	private void start() {
-		System.out.println("欢迎使用基于区块链的成绩管理系统：\n1：登录\n2：注册");
-		choose = sc.nextInt();
-		if(choose==1) login();
-		else if(choose==2)register();
-		else return;
-	}
-
-	private void login() {
-		System.out.println("请输入用户名：");
-		sc.nextLine();
-		String username = sc.nextLine();
-		System.out.println("请输入密钥文件位置：");
-		String private_key_path = sc.nextLine();
-		if(true) { // todo：验证用户名和私钥
+	
+	
+	public void start() {
+		System.out.println("1：登录\n2：注册");
+		choose = sc.nextInt();sc.nextLine();
+		if(choose==1) {
+			//待做
+//			new LoginProcedure().login();//
+			
 			int user_type = 1;//默认0
 			if(user_type==1) { //若用户类型为老师
 				System.out.println("欢迎：\n1：查询成绩\n2：录入成绩\n3：修改成绩");
@@ -70,22 +63,30 @@ public class Client {
 				
 			}
 		}
-		else {
-			
-		}
+		else if(choose==2)register();
+		else return;
 	}
 	
+	
 	private void register() {
+		
+		System.out.println("请输入学校服务器地址,如：172.16.36.68");
+		schoolIp = sc.nextLine();
+		
+		
 		System.out.println("请输入用户名：");
 		String username = sc.nextLine();
-		username = sc.nextLine();
+		
 		System.out.println("用户:"+username);
 		System.out.println("请输入密码：");
 		String password = Password.getEncryptedPassword(); //SHA256加密
-		if(Login.getInstance().login(username,password)) {  // todo:若验证成功，要验证用户名和密码。
+		
+		if(Login.getInstance().login(schoolIp,username,password)) {  // todo:若验证成功，要验证用户名和密码。
+			
 			System.out.println("请确认个人信息是否正确。\n1：确认\n2：有误");
 			choose = sc.nextInt();
 			if(choose==1) {
+				
 				System.out.println("信息确认成功，现为您生成公钥/私钥对，稍后公钥将上传至服务器(我们不会获取您的私钥)。。。。。");
 				Security s = new Security();
 				if(s.generateKeyPair()) { // todo:若成功生成公钥/私钥对
@@ -99,7 +100,7 @@ public class Client {
 					System.out.println("私钥为："+prik);
 					System.out.println("注意！！！：请妥善保管自己的私钥，切勿乱复制、上传、分享自己的私钥。");
 					String message = "?action=upload&username="+username+"&PublicKey="+pubk;
-					String r = MessageSender.getInstance().sendAndReceiveMessage(ip, port, message);
+					String r = MessageSender.getInstance().sendAndReceiveMessage(schoolIp, port, message);
 					if(r.equals("received")) {
 						System.out.println("公钥已成功上传至服务器。注册成功。");
 					}
@@ -117,5 +118,13 @@ public class Client {
 				return ;
 			}
 		}
+	}
+
+	/**
+	 * 第一次运行
+	 */
+	public void firstRun() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -1,9 +1,9 @@
-package sms.server;
+package sms;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Monitor implements Runnable{
+public class Monitor extends Thread{
 	//监听端口1934，处理不同的请求
 	ServerSocket serverSocket;
 	private int port = 1934;

@@ -1,13 +1,10 @@
 package sms.dal;
 
+import java.io.Serializable;
 import java.security.interfaces.RSAPrivateCrtKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.SortedSet;
-import java.util.TreeSet;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import sms.Security;
 
@@ -17,11 +14,12 @@ import sms.Security;
  * @author Chiuin
  *
  */
-public class Block {
+public class Block implements Serializable{
+	private static final long serialVersionUID = -1837262036470313162L;
 	private int version; //版本号
 	private String prevBlockHash;//父哈希，指向前一区块
 	private long timeStamp;//时间戳
-	private RSAPublicKey creatorPublicKey;//本区块创建者的公钥
+	private String creatorPublicKey;//本区块创建者的公钥
 	private String signature;//本区块创建者的数字签名	
 	private String info;
 //	Block preBlock;
@@ -31,12 +29,13 @@ public class Block {
 //	Block nextBlock;
 //	String nextBlockHash
 	
-	public Block(int version,String prevBlockHash,long timeStamp,RSAPublicKey creatorPublicKey,String info){
+	public Block(int version,String prevBlockHash,long timeStamp,String creatorPublicKey,String info){
 		this.version = version;
 		this.prevBlockHash = prevBlockHash;
 		this.timeStamp = timeStamp;
 		this.creatorPublicKey = creatorPublicKey;
 		this.info = info;
+//		System.out.println(info);
 	}
 	/**
 	 * 调用此方法会生成一个符合规范的区块，
@@ -46,7 +45,7 @@ public class Block {
 	public Block generateBlock(RSAPrivateCrtKey privateKey) {
 		//获取哈希值
 		String hash = getDigitalMessage(this);
-		this.signature =  Security.encryptString(hash,privateKey);
+		this.signature =  Security.encryptString(hash,privateKey);//使用自己的私钥签名
 		if(checkBlock(this)) return this;
 		return null;
 	}
@@ -57,7 +56,7 @@ public class Block {
 	 */
 	public static boolean checkBlock(Block block) {
 		String hash1 = getDigitalMessage(block);
-		String hash2 = Security.decryptString(block.getSignature(), block.creatorPublicKey);
+		String hash2 = Security.decryptString(block.getSignature(), Security.getPublicKeyFromString(block.creatorPublicKey));
 		if(hash1.equals(hash2)) return true;
 		return false;
 	}
@@ -70,7 +69,7 @@ public class Block {
 		String str = String.valueOf(block.getVersion());
 		str += block.getPrevBlockHash();
 		str += String.valueOf(block.getTimeStamp());
-		str += Security.keyToString_Base64(block.getCreatorPublicKey());
+		str += block.getCreatorPublicKey();
 		str += block.getInfo();
 		return Security.getDigitalMessage(str,"SHA-256");
 	}
@@ -84,7 +83,7 @@ public class Block {
 	public long getTimeStamp() {
 		return timeStamp;
 	}
-	public RSAPublicKey getCreatorPublicKey() {
+	public String getCreatorPublicKey() {
 		return creatorPublicKey;
 	}
 	public String getSignature() {
@@ -92,5 +91,12 @@ public class Block {
 	}
 	public String getInfo() {
 		return info;
+	}
+	public String toJSONString() {
+//		Object o = JSONObject.toJSON(this);
+//		return JSONObject.toJSONString(o,true);
+//		String str = JSONObject.toJSONString(this);//返回的info带有\
+//		return str.replaceAll("\\\\", "");
+		return JSONObject.toJSONString(this);
 	}
 }

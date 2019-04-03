@@ -82,7 +82,7 @@ public class MessageSender {
 	 */
 	public String sendAndReceiveMessage(String ip,int port,String message) {
 		try {
-			System.out.println("待发送消息："+message);
+			System.out.println("ip:"+ip+"; port:"+port+"; message："+message);
 			Socket socket = new Socket(ip, port);//可能存在：IP错误异常，服务端未监听该端口异常
 			OutputStream os = socket.getOutputStream();
 			OutputStreamWriter osw = new OutputStreamWriter(os);
